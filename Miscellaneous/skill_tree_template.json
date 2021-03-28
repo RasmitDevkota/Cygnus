@@ -1,0 +1,19 @@
+{
+    "skillTrees": {
+        "scholar": [
+            "unlockedSkill1", "unlockedSkill2"
+        ],
+        "engineer": [
+            "unlockedSkill1", "unlockedSkill2"
+        ],
+        "fighter": [
+            "unlockedSkill1", "unlockedSkill2"
+        ],
+        "assassin": [
+            "unlockedSkill1", "unlockedSkill2"
+        ],
+        "politician": [
+            "unlockedSkill1", "unlockedSkill2"
+        ]
+    }
+}
