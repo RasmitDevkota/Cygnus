@@ -4,6 +4,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/GameSession.h"
 #include "Kismet/GameplayStatics.h"
+#include "Misc/OutputDeviceDebug.h"
 #include "Misc/OutputDeviceNull.h"
 
 // UE Game Functions
@@ -142,16 +143,18 @@ void UHTTPComponent::FirebaseEmailPasswordAuth(FString identity, FString passwor
 	                idToken = JsonObject->GetStringField("idToken");
 	                UE_LOG(LogTemp, Warning, TEXT("idToken returned: %s"), *FString(idToken));
 
-            		UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(PlayerController, nullptr, EMouseLockMode::DoNotLock);
-                    PlayerController->bShowMouseCursor = 0;
+            		this->AuthStatus = FString("Authenticated");
 
-                    UGameplayStatics::OpenLevel(this, FName("/Game/ThirdPersonCPP/Maps/GameMap.GameMap"), true, FString(""));
-                } else
-                {
+            		OnRequestComplete.Broadcast(true);
+                } else {
                 	UE_LOG(LogTemp, Warning, TEXT("Could not find field 'idToken'."));
+
+            	OnRequestComplete.Broadcast(false);
                 }
             } else {
                 UE_LOG(LogTemp, Error, TEXT("Failed to deserialize HTTP response JSON"));
+
+            	OnRequestComplete.Broadcast(false);
             }
         });
         
@@ -184,9 +187,13 @@ void UHTTPComponent::FirebaseEmailPasswordAuth(FString identity, FString passwor
             	} else
             	{
             		UE_LOG(LogTemp, Warning, TEXT("Could not find field 'email'."));
+
+            		OnRequestComplete.Broadcast(false);
             	}
             } else {
                 UE_LOG(LogTemp, Error, TEXT("Failed to deserialize HTTP response JSON"));
+
+            	OnRequestComplete.Broadcast(false);
             }
         });
 	
@@ -199,6 +206,8 @@ void UHTTPComponent::FirebaseEmailPasswordAuth(FString identity, FString passwor
     	UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyU));
     	UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyE));
     	UE_LOG(LogTemp, Warning, TEXT("VerifyPassword returned: %s"), *FString(verifyP));
+
+        OnRequestComplete.Broadcast(false);
     }
 }
 

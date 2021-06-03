@@ -6,7 +6,9 @@
 #include "HttpModule.h"
 #include "HTTPComponent.generated.h"
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHTTPComponentDelegate, bool, result);
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CYGNUS_API UHTTPComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -25,6 +27,8 @@ public:
 	FString apiKey = FString(TEXT("AIzaSyBVT22t-x2H76119AHG8SgPU0_A0U-N1uA"));
 	FString idToken;
 	FString userId;
+
+	FString AuthStatus = FString("Unauthenticated");
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> FirebaseHTTPRequest(FString httpUrl, FString verb, FString data = "");
 
@@ -54,8 +58,9 @@ public:
 	void FirebaseDelete(FString path);
 	void FirebaseList(FString path);
 
-	void ValidateResponse(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful, void*(UHTTPComponent::* callback));
-
-	// UFUNCTION(BlueprintImplementableEvent)
-	// void DisplayAuthError();
+	UPROPERTY()
+	bool result;
+	
+	UPROPERTY(BlueprintAssignable)
+    FHTTPComponentDelegate OnRequestComplete;
 };
