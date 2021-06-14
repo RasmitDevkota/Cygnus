@@ -52,6 +52,9 @@ Cygnus/Plugins/*/Binaries/*
 # Builds
 Cygnus/Build/*
 
+# Packaged App
+Cygnus/WindowsNoEditor/**
+
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 Cygnus/!Build/*/
 Cygnus/Build/*/**
@@ -75,3 +78,6 @@ Cygnus/DerivedDataCache/*
 
 .fake
 .ionide
+
+# Don't include node_modules
+Miscellaneous/**

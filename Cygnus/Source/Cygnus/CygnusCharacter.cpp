@@ -1,6 +1,4 @@
 #include "CygnusCharacter.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
-#include "HTTPComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -32,16 +30,37 @@ ACygnusCharacter::ACygnusCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Construct"));
 }
 
 void ACygnusCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Begin playing"));
+
+	CygnusGameInstance = GetWorld()->GetGameInstance<UCygnusGameInstance>();
+
+	if (CygnusGameInstance == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Game Instance not instantiated, cannot instantiate FirebaseObject and Inventory"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Should be instantiated"));
+
+		FirebaseObject = CygnusGameInstance->FirebaseObject;
+		Inventory = CygnusGameInstance->Inventory;
+
+		CygnusGameInstance->OnInventoryInstantiated.Broadcast(true);
+	}
 }
 
 void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
@@ -52,27 +71,9 @@ void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACygnusCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACygnusCharacter::LookUpAtRate);
-
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &ACygnusCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &ACygnusCharacter::TouchStopped);
-
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACygnusCharacter::OnResetVR);
-}
-
-
-void ACygnusCharacter::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
-
-void ACygnusCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	Jump();
-}
-
-void ACygnusCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVector Location)
-{
-	StopJumping();
+	
+	// PlayerInputComponent->BindAction("ToggleInventory", IE_Pressed, this, &ACygnusCharacter::OpenInventory);
+	// PlayerInputComponent->BindAction("ToggleInventory", IE_Released, this, &ACygnusCharacter::CloseInventory);
 }
 
 void ACygnusCharacter::TurnAtRate(float Rate)
@@ -87,7 +88,7 @@ void ACygnusCharacter::LookUpAtRate(float Rate)
 
 void ACygnusCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if (Controller != nullptr && Value != 0.0f)
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -99,7 +100,7 @@ void ACygnusCharacter::MoveForward(float Value)
 
 void ACygnusCharacter::MoveRight(float Value)
 {
-	if ( (Controller != nullptr) && (Value != 0.0f) )
+	if (Controller != nullptr && Value != 0.0f)
 	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);

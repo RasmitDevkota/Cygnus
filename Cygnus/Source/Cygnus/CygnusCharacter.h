@@ -1,8 +1,10 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "CygnusGameInstance.h"
+#include "Inventory.h"
+#include "Firebase.h"
 #include "GameFramework/Character.h"
 #include "CygnusCharacter.generated.h"
 
@@ -16,19 +18,32 @@ class ACygnusCharacter : public ACharacter
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	ACygnusCharacter();
 
+	UPROPERTY(BlueprintReadWrite)
+	UCygnusGameInstance* CygnusGameInstance;
+
+	UPROPERTY(BlueprintReadWrite)
+	UFirebase* FirebaseObject;
+	
+	UPROPERTY(BlueprintReadWrite)
+	UInventory* Inventory;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+	
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 protected:
 	virtual void BeginPlay() override;
 
-	void OnResetVR();
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void MoveForward(float Value);
 
@@ -37,16 +52,5 @@ protected:
 	void TurnAtRate(float Rate);
 
 	void LookUpAtRate(float Rate);
-
-	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
-
-	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
-
-protected:
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-public:
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 
