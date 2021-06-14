@@ -80,4 +80,3 @@ Cygnus/DerivedDataCache/*
 .ionide
 
 # Don't include node_modules
-Miscellaneous/**
