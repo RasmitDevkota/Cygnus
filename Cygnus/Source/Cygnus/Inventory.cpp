@@ -16,31 +16,42 @@ ECygnusError UInventory::AddToHotbar(FItemStruct Item, bool insist)
 {
 	if (Hotbar.Contains(Item.Name) && Item.CanStack)
 	{
-		FItemStack ItemStack = *Hotbar.Find(Item.Name);
-
-		ItemStack.Add(Item);
-	}
+		Hotbar.Find(Item.Name)->Add(Item);
 		
+		return ECygnusError::NoError;
+	}
+	
 	if (Hotbar.Num() == 10)
 	{
 		if (insist)
 		{
-			return AddToCloudSack(Item);
+			return AddToRiftSack(Item);
 		}
 			
 		return ECygnusError::HotbarFull;
 	}
-
+	
+	Hotbar.Add(Item.Name, FItemStack(Item));
+	
 	return ECygnusError::NoError;
 }
 
-ECygnusError UInventory::AddToCloudSack(FItemStruct Item)
+ECygnusError UInventory::AddToRiftSack(FItemStruct Item)
 {
-	if (RiftSack.Num() == RiftSackCapacity)
+	if (RiftSack.Num() >= RiftSackCapacity)
 	{
 		return ECygnusError::RiftSackFull;
 	}
-		
+	
+	if (RiftSack.Contains(Item.Name) && Item.CanStack)
+	{
+		RiftSack.Find(Item.Name)->Add(Item);
+	}
+	else
+	{
+		RiftSack.Add(Item.Name, FItemStack(Item));
+	}
+	
 	return ECygnusError::NoError;
 }
 
@@ -52,8 +63,7 @@ void UInventory::SetInventory(TArray<FDocument> Documents)
 	{
 		FItemStruct Item = FItemStruct(ItemDocument.Fields);
 			
-		FItemStack ItemStack = FItemStack();
-		ItemStack.Add(Item);
+		FItemStack ItemStack = FItemStack(Item);
 			
 		if (Item.Position < 10)
 		{
@@ -76,8 +86,6 @@ void UInventory::SetInventory(TArray<FDocument> Documents)
 	Fetched = true;
 
 	UE_LOG(LogTemp, Warning, TEXT("Finished setting inventory"));
-
-	UE_LOG(LogTemp, Warning, TEXT("Local Hotbar Size: %d"), Hotbar.Num());
 	
 	OnInventorySet.Broadcast(true);
 }

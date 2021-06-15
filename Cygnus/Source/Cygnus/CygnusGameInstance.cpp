@@ -34,8 +34,6 @@ TArray<FName> UCygnusGameInstance::GetHotbar()
 
 	Inventory->Hotbar.GetKeys(Hotbar);
 
-	UE_LOG(LogTemp, Warning, TEXT("CygnusGameInstance Hotbar Size: %d"), Hotbar.Num());
-
 	for (int i = 0; i < 10; i++)
 	{
 		if (i < Hotbar.Num())
@@ -45,8 +43,6 @@ TArray<FName> UCygnusGameInstance::GetHotbar()
 		else
 		{
 			HotbarArray.Add(FName("TestItem"));
-
-			UE_LOG(LogTemp, Warning, TEXT("Added filler TestItem"));
 		}
 		
 		UE_LOG(LogTemp, Warning, TEXT("Hotbar Item #%d: %s"), i, *FString(HotbarArray[i].ToString()));
@@ -71,24 +67,39 @@ TArray<FName> UCygnusGameInstance::GetRiftSack()
 		UE_LOG(LogTemp, Warning, TEXT("Inventory has not been fetched"));
 		
 		Inventory->FetchInventory(FirebaseObject);
+
+		return RiftSackArray;
 	}
-	
-	TMap<FName, FItemStack> RiftSack = Inventory->RiftSack;
+
+	TArray<FName> RiftSack;
+
+	Inventory->RiftSack.GetKeys(RiftSack);
 
 	for (int i = 0; i < Inventory->RiftSackCapacity; i++)
 	{
-		RiftSackArray.Add(FName("TestItem"));
+		if (i < RiftSack.Num())
+		{
+			RiftSackArray.Add(RiftSack[i]);
+		}
+		else
+		{
+			RiftSackArray.Add(FName("TestItem"));
+		}
+		
+		UE_LOG(LogTemp, Warning, TEXT("Hotbar Item #%d: %s"), i, *FString(RiftSackArray[i].ToString()));
 	}
 
 	return RiftSackArray;
 }
 
-void UCygnusGameInstance::OpenInventory()
+void UCygnusGameInstance::ToggleInventory()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Called broadcast Inventory Toggle"));
 	
-}
+	if (Inventory->Fetched)
+	{
+		OnInventoryToggled.Broadcast(true);
 
-void UCygnusGameInstance::CloseInventory()
-{
-	
+		UE_LOG(LogTemp, Warning, TEXT("Broadcasted Inventory Toggle"));
+	}
 }

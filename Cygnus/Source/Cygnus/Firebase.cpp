@@ -8,7 +8,7 @@ UFirebase::UFirebase()
 {
 	Http = &FHttpModule::Get();
 
-	UE_LOG(LogTemp, Warning, TEXT("Firebase instantiated, userId: %s"), *FString(userId));
+	UE_LOG(LogTemp, Warning, TEXT("Firebase instantiated"));
 }
 
 // Utility Functions
@@ -106,8 +106,6 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
             	{
 	                idToken = JsonObject->GetStringField("idToken");
             		userId = JsonObject->GetStringField("localId");
-            		
-            		UE_LOG(LogTemp, Warning, TEXT("UserId: %s"), *FString(userId));
 
             		this->AuthStatus = FString("Authenticated");
 
@@ -375,8 +373,6 @@ void UFirebase::FirebaseList(FString path) {
 			{
 				FJsonObject* DocumentObject = Documents[i]->AsObject().Get();
 				result.Add(FDocument(*DocumentObject));
-				
-				UE_LOG(LogTemp, Warning, TEXT("Added item to result array"));
 			}
         	
 			OnListDocumentsRequestComplete.Broadcast(result);

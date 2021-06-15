@@ -15,6 +15,18 @@ struct FItemStack
 
 	TArray<FItemStruct> Items;
 
+	FItemStack()
+	{
+		
+	}
+
+	FItemStack(FItemStruct Item)
+	{
+		ItemName = Item.Name;
+
+		Items.Add(Item);
+	}
+
 	ECygnusError Add(FItemStruct Item)
 	{
 		if (ItemName == FName(""))

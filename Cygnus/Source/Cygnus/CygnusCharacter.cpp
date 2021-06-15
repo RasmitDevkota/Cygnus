@@ -44,7 +44,7 @@ void ACygnusCharacter::BeginPlay()
 
 	if (CygnusGameInstance == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Game Instance not instantiated, cannot instantiate FirebaseObject and Inventory"));
+		UE_LOG(LogTemp, Warning, TEXT("GameInstance not instantiated, cannot instantiate FirebaseObject and Inventory"));
 	}
 	else
 	{
@@ -72,8 +72,7 @@ void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACygnusCharacter::LookUpAtRate);
 	
-	// PlayerInputComponent->BindAction("ToggleInventory", IE_Pressed, this, &ACygnusCharacter::OpenInventory);
-	// PlayerInputComponent->BindAction("ToggleInventory", IE_Released, this, &ACygnusCharacter::CloseInventory);
+	PlayerInputComponent->BindAction("ToggleInventory", IE_Pressed, this, &ACygnusCharacter::ToggleInventoryCall);
 }
 
 void ACygnusCharacter::TurnAtRate(float Rate)
@@ -108,4 +107,9 @@ void ACygnusCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void ACygnusCharacter::ToggleInventoryCall()
+{
+	CygnusGameInstance->ToggleInventory();
 }

@@ -8,6 +8,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryInstantiatedDelegate, bool, result);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryToggledDelegate, bool, result);
+
 UCLASS()
 class CYGNUS_API UCygnusGameInstance : public UGameInstance
 {
@@ -31,11 +33,11 @@ public:
 	TArray<FName> GetRiftSack();
 
 	UFUNCTION(BlueprintCallable)
-	void OpenInventory();
-	
-	UFUNCTION(BlueprintCallable)
-	void CloseInventory();
+	void ToggleInventory();
 
 	UPROPERTY(BlueprintAssignable)
 	FInventoryInstantiatedDelegate OnInventoryInstantiated;
+
+	UPROPERTY(BlueprintAssignable)
+	FInventoryToggledDelegate OnInventoryToggled;
 };

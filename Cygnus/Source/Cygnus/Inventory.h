@@ -33,7 +33,7 @@ public:
 
 	ECygnusError AddToHotbar(FItemStruct Item, bool insist = false);
 
-	ECygnusError AddToCloudSack(FItemStruct Item);
+	ECygnusError AddToRiftSack(FItemStruct Item);
 
 	UFUNCTION(BlueprintCallable)
 	void SetInventory(TArray<FDocument> Documents);
