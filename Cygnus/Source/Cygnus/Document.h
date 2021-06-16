@@ -6,7 +6,7 @@
 USTRUCT(BlueprintType)
 struct FDocument
 {
-	GENERATED_USTRUCT_BODY();
+	GENERATED_BODY();
 
 	FString Name;
 

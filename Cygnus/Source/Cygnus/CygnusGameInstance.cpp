@@ -86,7 +86,7 @@ TArray<FName> UCygnusGameInstance::GetRiftSack()
 			RiftSackArray.Add(FName("TestItem"));
 		}
 		
-		UE_LOG(LogTemp, Warning, TEXT("Hotbar Item #%d: %s"), i, *FString(RiftSackArray[i].ToString()));
+		UE_LOG(LogTemp, Warning, TEXT("RiftSack Item #%d: %s"), i, *FString(RiftSackArray[i].ToString()));
 	}
 
 	return RiftSackArray;

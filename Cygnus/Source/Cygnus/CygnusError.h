@@ -8,6 +8,9 @@ enum class ECygnusError : uint8
 
 	/// Item Errors
 
+	// Item Not Found Error
+	ItemNotFound,
+
 	// ItemStack Error
 	ItemMismatch,
 	

@@ -29,11 +29,11 @@ public:
 
 	UInventory();
 
-	ECygnusError Add(FItemStruct Item);
+	ECygnusError Add(UItemObject* Item);
 
-	ECygnusError AddToHotbar(FItemStruct Item, bool insist = false);
+	ECygnusError AddToHotbar(UItemObject* Item, bool insist = false);
 
-	ECygnusError AddToRiftSack(FItemStruct Item);
+	ECygnusError AddToRiftSack(UItemObject* Item);
 
 	UFUNCTION(BlueprintCallable)
 	void SetInventory(TArray<FDocument> Documents);

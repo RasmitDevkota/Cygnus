@@ -1,39 +1,40 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ItemObject.h"
 #include "CygnusError.h"
-#include "ItemStruct.h"
 #include "ItemStack.generated.h"
 
 USTRUCT(BlueprintType)
 struct FItemStack
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FName ItemName = FName("");
 
-	TArray<FItemStruct> Items;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<UItemObject*> Items;
 
 	FItemStack()
 	{
 		
 	}
 
-	FItemStack(FItemStruct Item)
+	FItemStack(UItemObject* Item)
 	{
-		ItemName = Item.Name;
+		ItemName = Item->Name;
 
 		Items.Add(Item);
 	}
 
-	ECygnusError Add(FItemStruct Item)
+	ECygnusError Add(UItemObject* Item)
 	{
 		if (ItemName == FName(""))
 		{
-			ItemName = Item.Name;
+			ItemName = Item->Name;
 		}
-		else if (ItemName.IsEqual(Item.Name))
+		else if (ItemName.IsEqual(Item->Name))
 		{
 			return ECygnusError::ItemMismatch;
 		}
@@ -43,9 +44,18 @@ struct FItemStack
 		return ECygnusError::NoError;
 	}
 
-	ECygnusError Delete(FItemStruct Item)
+	ECygnusError Delete()
 	{
-		// Items.Remove(Item);
+		// TODO("Fix this so it actually removes the correct item and instead of assuming all items are equal (hint: use pointers/references or item IDs)")
+		
+		if (Items.Num() == 0)
+		{
+			return ECygnusError::NoError;
+		}
+
+		Items.Pop();
+		
+		return ECygnusError::NoError;
 	}
 
 	ECygnusError Clear()
@@ -53,5 +63,7 @@ struct FItemStack
 		ItemName = FName("");
 		
 		Items.Empty();
+
+		return ECygnusError::NoError;
 	}
 };
