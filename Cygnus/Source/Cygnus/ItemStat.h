@@ -9,6 +9,9 @@ struct FItemStat
 	GENERATED_BODY();
 
 	UPROPERTY()
+	FName Name = FName("");
+
+	UPROPERTY()
 	FName Type = FName("");
 
 	UPROPERTY()

@@ -316,6 +316,36 @@ void UFirebase::FirebaseCreate(FString name, FString path, FString data) {
 	Request->ProcessRequest();
 }
 
+void UFirebase::FirebaseUpdate(FString path, FString data)
+{
+	FString updateUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(updateUrl + apiKey, FString(TEXT("PATCH")));
+
+	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+	{
+		TSharedPtr<FJsonObject> JsonObject;
+		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
+
+		UE_LOG(LogTemp, Warning, TEXT("Response received"));
+
+		const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+		UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
+
+		const FString responseString = Response->GetContentAsString();
+		UE_LOG(LogTemp, Warning, TEXT("Response String: %s"), *FString(responseString));
+
+		if (FJsonSerializer::Deserialize(Reader, JsonObject)) {
+			UE_LOG(LogTemp, Warning, TEXT("Response deserialized"));
+
+			OnUpdateDocumentComplete.Broadcast(true);
+		} else {
+			UE_LOG(LogTemp, Error, TEXT("Failed to deserialize HTTP response JSON"));
+		}
+	});
+	
+	Request->ProcessRequest();
+}
+
 void UFirebase::FirebaseDelete(FString path) {
 	FString deleteUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(deleteUrl + apiKey, FString(TEXT("DELETE")), "");

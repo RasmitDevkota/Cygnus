@@ -31,21 +31,21 @@ TArray<FName> UCygnusGameInstance::GetHotbar()
 	}
 	
 	TArray<FName> Hotbar;
-
 	Inventory->Hotbar.GetKeys(Hotbar);
 
-	for (int i = 0; i < 10; i++)
+	TArray<int> Positions;
+
+	for (auto ItemEntry: Inventory->Hotbar)
 	{
-		if (i < Hotbar.Num())
-		{
-			HotbarArray.Add(Hotbar[i]);
-		}
-		else
-		{
-			HotbarArray.Add(FName("TestItem"));
-		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("Hotbar Item #%d: %s"), i, *FString(HotbarArray[i].ToString()));
+		Positions.Add(ItemEntry.Value.StackPosition);
+	}
+
+	HotbarArray.Init(FName("NoItem"), 10);
+
+	for (int i = 0; i < Positions.Num(); i++)
+	{
+		int Position = Positions[i];
+		HotbarArray[Position] = Hotbar[i];
 	}
 
 	return HotbarArray;
@@ -75,18 +75,15 @@ TArray<FName> UCygnusGameInstance::GetRiftSack()
 
 	Inventory->RiftSack.GetKeys(RiftSack);
 
-	for (int i = 0; i < Inventory->RiftSackCapacity; i++)
+	// TODO("Should Rift Sack be filled to capacity in case user gets more items or filled dynamically?")
+	// --> "Filled to capacity" is actually dynamic anyways since capacity can increase, might as well fill dynamically?
+	// --> If filled dynamically, space is saved but performance is decreased, does it matter though?
+	// --> If filled to capacity, Rift Sack must be filled with empty items - is this okay or should we find a representation of an empty item (i.e. a single shared EmptyItemStack)?
+	// --> If filled dynamically, we have to remove dynamically, more performance costs
+	
+	for (int i = 0; i < RiftSack.Num(); i++)
 	{
-		if (i < RiftSack.Num())
-		{
-			RiftSackArray.Add(RiftSack[i]);
-		}
-		else
-		{
-			RiftSackArray.Add(FName("TestItem"));
-		}
-		
-		UE_LOG(LogTemp, Warning, TEXT("RiftSack Item #%d: %s"), i, *FString(RiftSackArray[i].ToString()));
+		RiftSackArray.Add(RiftSack[i]);
 	}
 
 	return RiftSackArray;

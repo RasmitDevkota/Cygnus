@@ -7,6 +7,7 @@
 #include "Firebase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAuthRequestCompleteDelegate, bool, result);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUpdateDocumentRequestCompleteDelegate, bool, result);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FListDocumentsRequestCompleteDelegate, TArray<FDocument>, result);
 
 UCLASS()
@@ -63,11 +64,15 @@ public:
 
 	void FirebaseGet(FString path);
 	void FirebaseCreate(FString name, FString path, FString data);
+	void FirebaseUpdate(FString path, FString data);
 	void FirebaseDelete(FString path);
 	void FirebaseList(FString path);
 	
 	UPROPERTY(BlueprintAssignable)
 	FAuthRequestCompleteDelegate OnAuthRequestComplete;
+
+	UPROPERTY(BlueprintAssignable)
+	FUpdateDocumentRequestCompleteDelegate OnUpdateDocumentComplete;
 
 	UPROPERTY(BlueprintAssignable)
 	FListDocumentsRequestCompleteDelegate OnListDocumentsRequestComplete;

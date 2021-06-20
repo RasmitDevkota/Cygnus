@@ -5,6 +5,7 @@
 #include "CygnusGameInstance.h"
 #include "Inventory.h"
 #include "Firebase.h"
+#include "Discord/discord.h"
 #include "GameFramework/Character.h"
 #include "CygnusCharacter.generated.h"
 
@@ -30,6 +31,8 @@ public:
 	
 	UPROPERTY(BlueprintReadWrite)
 	UInventory* Inventory;
+
+	discord::Core* DiscordCore{};
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;
@@ -42,6 +45,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

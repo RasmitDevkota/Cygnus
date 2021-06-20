@@ -55,6 +55,26 @@ void ACygnusCharacter::BeginPlay()
 
 		CygnusGameInstance->OnInventoryInstantiated.Broadcast(true);
 	}
+
+	discord::Core::Create(855988240447832065, DiscordCreateFlags_NoRequireDiscord, &DiscordCore);
+	
+	discord::Activity DiscordActivity{};
+	
+	DiscordActivity.SetDetails("Developing Cygnus - WIP");
+	DiscordActivity.SetState("Coming Soon!");
+	
+	DiscordActivity.GetAssets() = *new discord::ActivityAssets();
+	DiscordActivity.GetAssets().SetLargeImage("cygnus");
+	DiscordActivity.GetAssets().SetLargeText("Cygnus");
+	
+	DiscordCore->ActivityManager().UpdateActivity(DiscordActivity, [](discord::Result Result) {});
+}
+
+void ACygnusCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	
+	DiscordCore->RunCallbacks();
 }
 
 void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)

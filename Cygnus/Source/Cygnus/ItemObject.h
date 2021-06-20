@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+
+#include "Firebase.h"
 #include "ItemStat.h"
 #include "UObject/Object.h"
 #include "ItemObject.generated.h"
@@ -31,9 +33,17 @@ public:
 
 	TMap<FName, FItemStat> ItemStats = TMap<FName, FItemStat>();
 
+	TArray<FString> MasterStatList = TArray<FString>();
+
+	bool NeedsPush = false;
+
+	UFirebase* FirebaseObject;
+
 	UItemObject();
 
 	UItemObject(FJsonObject Fields);
+
+	~UItemObject();
 
 	void Set(FJsonObject Fields);
 
