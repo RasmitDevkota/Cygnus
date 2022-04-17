@@ -38,7 +38,7 @@ bool UFirebase::VerifyPassword(FString password) {
 
 void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FString password, APlayerController* PlayerController) {
 	if (VerifyUsername(username) && VerifyEmail(email) && VerifyPassword(password)) {
-		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordSignUp + apiKey, FString("POST"), FString(TEXT("{\"email\":\"" + email + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}")));
+		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordSignUp + apiKey, "POST", "{\"email\":\"" + email + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}");
 
 		Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 	    {
@@ -47,7 +47,7 @@ void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FSt
 
 	        UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-	        const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+	        const FString status = bWasSuccessful ? "Success" : "Failure";
 	        UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
 	        const FString responseString = Response->GetContentAsString();
@@ -67,14 +67,14 @@ void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FSt
 
 		FirebaseUpdateUserProfile(username);
 
-		FString userDocPath = FString(TEXT("users/${userId}"));
-		FString userDocData = FString(TEXT("{\"fields\": {\"email\":{\"stringValue\":\"" + email + "\"},\"displayName\":{\"stringValue\": \"" + username + "\"}, \"id\":{\"stringValue\": \"" + userId + "\"}}}"));
+		FString userDocPath = "users/${userId}";
+		FString userDocData = "{\"fields\": {\"email\":{\"stringValue\":\"" + email + "\"},\"displayName\":{\"stringValue\": \"" + username + "\"}, \"id\":{\"stringValue\": \"" + userId + "\"}}}";
 		
 		FirebaseCreate(userId, userDocPath, userDocData);
 	} else {
-		FString verifyU = (VerifyUsername(username)) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
-		FString verifyE = (VerifyEmail(email)) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
-		FString verifyP = (VerifyPassword(password)) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+		FString verifyU = VerifyUsername(username) ? "Success" : "Failure";
+		FString verifyE = VerifyEmail(email) ? "Success" : "Failure";
+		FString verifyP = VerifyPassword(password) ? "Success" : "Failure";
 
 		UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyU));
 		UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyE));
@@ -84,7 +84,7 @@ void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FSt
 
 void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, APlayerController* PlayerController) {
     if (VerifyEmail(identity) && VerifyPassword(password)) {
-    	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordAuthUrl + apiKey, FString("POST"), FString(TEXT("{\"email\":\"" + identity + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}")));
+    	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordAuthUrl + apiKey, "POST", "{\"email\":\"" + identity + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}");
 
     	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
         {
@@ -93,7 +93,7 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
     
             UE_LOG(LogTemp, Warning, TEXT("Response received"));
     
-            const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+            const FString status = bWasSuccessful ? "Success" : "Failure";
             UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
     
             const FString responseString = Response->GetContentAsString();
@@ -107,11 +107,11 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
 	                idToken = JsonObject->GetStringField("idToken");
             		userId = JsonObject->GetStringField("localId");
 
-            		this->AuthStatus = FString("Authenticated");
+            		this->AuthStatus = "Authenticated";
 
             		OnAuthRequestComplete.Broadcast(true);
                 } else {
-                	UE_LOG(LogTemp, Warning, TEXT("Could not find field 'idToken'."));
+                	UE_LOG(LogTemp, Warning, TEXT("Could not find field 'idToken'"));
 
             		OnAuthRequestComplete.Broadcast(false);
                 }
@@ -124,8 +124,8 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
         
     	Request->ProcessRequest();
     } else if (VerifyUsername(identity) && VerifyPassword(password)) {
-    	FString getUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/emails/" + identity + "?key="));
-    	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUrl + apiKey, FString(TEXT("GET")));
+    	FString getUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/emails/" + identity + "?key=";
+    	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUrl + apiKey, "GET");
 
     	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
         {
@@ -134,7 +134,7 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
 
             UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-            const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+            const FString status = bWasSuccessful ? "Success" : "Failure";
             UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
             const FString responseString = Response->GetContentAsString();
@@ -163,9 +163,9 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
 	
     	Request->ProcessRequest();
     } else {
-    	FString verifyU = VerifyUsername(identity) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
-    	FString verifyE = VerifyEmail(identity) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
-    	FString verifyP = VerifyPassword(password) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+    	FString verifyU = VerifyUsername(identity) ? "Success" : "Failure";
+    	FString verifyE = VerifyEmail(identity) ? "Success" : "Failure";
+    	FString verifyP = VerifyPassword(password) ? "Success" : "Failure";
 
     	UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyU));
     	UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyE));
@@ -178,39 +178,39 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
 // User Management
 
 void UFirebase::FirebaseSendPwdReset(FString email) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(sendPwdResetUrl + apiKey, FString("POST"), FString(TEXT("{\"requestType\":\"PASSWORD_RESET\",\"email\":\"" + email + "\"}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(sendPwdResetUrl + apiKey, "POST", "{\"requestType\":\"PASSWORD_RESET\",\"email\":\"" + email + "\"}");
 }
 
 void UFirebase::FirebaseVerifyPwdReset(FString code) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(verifyPwdResetUrl + apiKey, FString("POST"), FString(TEXT("{\"oobCode\":\"" + code + "\"}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(verifyPwdResetUrl + apiKey, "POST", "{\"oobCode\":\"" + code + "\"}");
 }
 
 void UFirebase::FirebaseConfirmPwdReset(FString code, FString password) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(confirmPwdResetUrl + apiKey, FString("POST"), FString(TEXT("{\"oobCode\":\"" + code + "\",\"newPassword\":\"" + password + "\"}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(confirmPwdResetUrl + apiKey, "POST", "{\"oobCode\":\"" + code + "\",\"newPassword\":\"" + password + "\"}");
 }
 
 void UFirebase::FirebaseChangeEmail(FString email) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(changeEmailUrl + apiKey, FString("POST"), FString(TEXT("{\"idToken\":\"" + idToken + "\",\"email\":\"" + email + "\",\"returnSecureToken\":true}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(changeEmailUrl + apiKey, "POST", "{\"idToken\":\"" + idToken + "\",\"email\":\"" + email + "\",\"returnSecureToken\":true}");
 }
 
 void UFirebase::FirebaseChangePassword(FString password) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(changePasswordUrl + apiKey, FString("POST"), FString(TEXT("{\"idToken\":\"" + idToken + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(changePasswordUrl + apiKey, "POST", "{\"idToken\":\"" + idToken + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}");
 }
 
 void UFirebase::FirebaseUpdateUserProfile(FString displayName, FString photoUrl) {
-	FString data = FString(TEXT("{\"idToken\":\"" + idToken + "\""));
+	FString data = "{\"idToken\":\"" + idToken + "\"";
 
-	if (displayName != FString(TEXT(""))) {
-		data += FString(TEXT(",\"displayName\":\"" + displayName + "\""));
+	if (displayName != "") {
+		data += ",\"displayName\":\"" + displayName + "\"";
 	}
 
-	if (photoUrl != FString(TEXT(""))) {
-		data += FString(TEXT(",\"photoUrl\":\"" + photoUrl + "\""));
+	if (photoUrl != "") {
+		data += ",\"photoUrl\":\"" + photoUrl + "\"";
 	}
 
-	data += FString(TEXT(",\"returnSecureToken\":true}"));
+	data += ",\"returnSecureToken\":true}";
 
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(updateUserProfileUrl + apiKey, FString("POST"), *FString(data));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(updateUserProfileUrl + apiKey, "POST", data);
 
 	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
     {
@@ -219,7 +219,7 @@ void UFirebase::FirebaseUpdateUserProfile(FString displayName, FString photoUrl)
 
         UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-        const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+        const FString status = bWasSuccessful ? "Success" : "Failure";
         UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
         const FString responseString = Response->GetContentAsString();
@@ -241,26 +241,26 @@ void UFirebase::FirebaseUpdateUserProfile(FString displayName, FString photoUrl)
 }
 
 void UFirebase::FirebaseGetUserProfile() {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUserProfileUrl + apiKey, FString("POST"), FString(TEXT("{\"idToken\":\"" + idToken + "\"}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUserProfileUrl + apiKey, "POST", "{\"idToken\":\"" + idToken + "\"}");
 }
 
 void UFirebase::FirebaseSendEmailVerification() {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(sendEmailVerificationUrl + apiKey, FString("POST"), FString(TEXT("data")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(sendEmailVerificationUrl + apiKey, "POST", "data");
 }
 
 void UFirebase::FirebaseConfirmEmailVerification(FString code) {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(confirmEmailVerificationUrl + apiKey, FString("POST"), FString(TEXT("{\"oobCode\":\"" + code + "\"}")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(confirmEmailVerificationUrl + apiKey, "POST", "{\"oobCode\":\"" + code + "\"}");
 }
 
 void UFirebase::FirebaseDeleteAccount() {
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(deleteAccountUrl + apiKey, FString("POST"), FString(TEXT("data")));
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(deleteAccountUrl + apiKey, "POST", "data");
 }
 
 // Basic Firebase Functions
 
 void UFirebase::FirebaseGet(FString path) {
-	FString getUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUrl + apiKey, FString(TEXT("GET")));
+	FString getUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key=";
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUrl + apiKey, "GET");
 
 	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 	{
@@ -269,7 +269,7 @@ void UFirebase::FirebaseGet(FString path) {
 
 	    UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-	    const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+	    const FString status = bWasSuccessful ? "Success" : "Failure";
 	    UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
 	    const FString responseString = Response->GetContentAsString();
@@ -290,8 +290,8 @@ void UFirebase::FirebaseGet(FString path) {
 }
 
 void UFirebase::FirebaseCreate(FString name, FString path, FString data) {
-	FString createUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "/placeholder/..?documentId=" + name + "&key="));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(createUrl + apiKey, FString(TEXT("POST")), data);
+	FString createUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "/placeholder/..?documentId=" + name + "&key=";
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(createUrl + apiKey, "POST", data);
 
 	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
     {
@@ -300,7 +300,7 @@ void UFirebase::FirebaseCreate(FString name, FString path, FString data) {
 
         UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-        const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+        const FString status = bWasSuccessful ? "Success" : "Failure";
         UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
         const FString responseString = Response->GetContentAsString();
@@ -318,8 +318,8 @@ void UFirebase::FirebaseCreate(FString name, FString path, FString data) {
 
 void UFirebase::FirebaseUpdate(FString path, FString data)
 {
-	FString updateUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(updateUrl + apiKey, FString(TEXT("PATCH")));
+	FString updateUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key=";
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(updateUrl + apiKey, "PATCH");
 
 	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
 	{
@@ -328,7 +328,7 @@ void UFirebase::FirebaseUpdate(FString path, FString data)
 
 		UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-		const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+		const FString status = bWasSuccessful ? "Success" : "Failure";
 		UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
 		const FString responseString = Response->GetContentAsString();
@@ -347,8 +347,8 @@ void UFirebase::FirebaseUpdate(FString path, FString data)
 }
 
 void UFirebase::FirebaseDelete(FString path) {
-	FString deleteUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(deleteUrl + apiKey, FString(TEXT("DELETE")), "");
+	FString deleteUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key=";
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(deleteUrl + apiKey, "DELETE", "");
 
 	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
     {
@@ -357,7 +357,7 @@ void UFirebase::FirebaseDelete(FString path) {
 
         UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-        const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+        const FString status = bWasSuccessful ? "Success" : "Failure";
         UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
         const FString responseString = Response->GetContentAsString();
@@ -374,8 +374,8 @@ void UFirebase::FirebaseDelete(FString path) {
 }
 
 void UFirebase::FirebaseList(FString path) {
-	FString listUrl = FString(TEXT("https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key="));
-	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(listUrl + apiKey, FString(TEXT("GET")), "");
+	FString listUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/" + path + "?key=";
+	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(listUrl + apiKey, "GET", "");
 
 	UE_LOG(LogTemp, Warning, TEXT("ListURL: %s"), *FString(listUrl + apiKey));
 
@@ -386,7 +386,7 @@ void UFirebase::FirebaseList(FString path) {
 
         UE_LOG(LogTemp, Warning, TEXT("Response received"));
 
-        const FString status = (bWasSuccessful) ? FString(TEXT("Success")) : FString(TEXT("Failure"));
+        const FString status = bWasSuccessful ? "Success" : "Failure";
         UE_LOG(LogTemp, Warning, TEXT("Response status : %s"), *FString(status));
 
         const FString responseString = Response->GetContentAsString();
@@ -396,14 +396,17 @@ void UFirebase::FirebaseList(FString path) {
             UE_LOG(LogTemp, Warning, TEXT("Response deserialized"));
         	
         	TArray<FDocument> result;
-        	
-			TArray<TSharedPtr<FJsonValue>> Documents = JsonObject->GetArrayField("documents");
 
-			for (int i = 0; i < Documents.Num(); i++)
-			{
-				FJsonObject* DocumentObject = Documents[i]->AsObject().Get();
-				result.Add(FDocument(*DocumentObject));
-			}
+        	if (JsonObject->HasField("documents"))
+        	{
+        		TArray<TSharedPtr<FJsonValue>> Documents = JsonObject->GetArrayField("documents");
+
+				for (int i = 0; i < Documents.Num(); i++)
+				{
+					FJsonObject* DocumentObject = Documents[i]->AsObject().Get();
+					result.Add(FDocument(*DocumentObject));
+				}
+        	}
         	
 			OnListDocumentsRequestComplete.Broadcast(result);
         } else {
@@ -426,7 +429,7 @@ TSharedRef<IHttpRequest, ESPMode::ThreadSafe> UFirebase::FirebaseHTTPRequest(FSt
 	Request->SetHeader(TEXT("User-Agent"), "X-UnrealEngine-Agent");
 	Request->SetHeader("Content-Type", TEXT("application/json"));
 
-	if (data != FString(TEXT(""))) {
+	if (data != "") {
 		UE_LOG(LogTemp, Warning, TEXT("Setting data..."));
 	
 		Request->SetContentAsString(data);

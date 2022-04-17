@@ -57,17 +57,40 @@ void ACygnusCharacter::BeginPlay()
 	}
 
 	discord::Core::Create(855988240447832065, DiscordCreateFlags_NoRequireDiscord, &DiscordCore);
+
+	if (!CygnusGameInstance->DiscordActivitySet)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Setting DiscordActivity..."));
+		
+		DiscordActivity.GetAssets().SetLargeImage("cygnus");
+		DiscordActivity.GetAssets().SetLargeText("Cygnus");
 	
-	discord::Activity DiscordActivity{};
+		DiscordActivity.GetAssets().SetSmallImage("alientech");
+		DiscordActivity.GetAssets().SetSmallText("Made by AlienTech");
 	
-	DiscordActivity.SetDetails("Developing Cygnus - WIP");
-	DiscordActivity.SetState("Coming Soon!");
+		DiscordActivity.SetDetails("Developing Cygnus - Coming Soon!");
+		DiscordActivity.SetState("Coding Solo");
+
+		DiscordActivity.GetTimestamps().SetStart(FDateTime().Now().ToUnixTimestamp() - GetWorld()->GetRealTimeSeconds());
+
+		DiscordActivity.GetParty().SetId("2004083120050519");
+		DiscordActivity.GetParty().GetSize().SetCurrentSize(1);
+		DiscordActivity.GetParty().GetSize().SetMaxSize(4);
+
+		DiscordActivity.GetSecrets().SetJoin("831");
+		DiscordActivity.GetSecrets().SetSpectate("519");
+
+		DiscordActivity.SetType(discord::ActivityType::Playing);
 	
-	DiscordActivity.GetAssets() = *new discord::ActivityAssets();
-	DiscordActivity.GetAssets().SetLargeImage("cygnus");
-	DiscordActivity.GetAssets().SetLargeText("Cygnus");
-	
-	DiscordCore->ActivityManager().UpdateActivity(DiscordActivity, [](discord::Result Result) {});
+		DiscordCore->ActivityManager().UpdateActivity(DiscordActivity, [](discord::Result Result)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Finished setting DiscordActivity"));
+		});
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Skipped setting DiscordActivity"));
+	}
 }
 
 void ACygnusCharacter::Tick(float DeltaTime)
@@ -93,6 +116,11 @@ void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ACygnusCharacter::LookUpAtRate);
 	
 	PlayerInputComponent->BindAction("ToggleInventory", IE_Pressed, this, &ACygnusCharacter::ToggleInventoryCall);
+
+	for (int n = 1; n <= 10; n++)
+	{
+		PlayerInputComponent->BindAction(FName(TEXT("Hotbar%d"), n), IE_Pressed, this, &ACygnusCharacter::ToggleInventoryCall);
+	}
 }
 
 void ACygnusCharacter::TurnAtRate(float Rate)

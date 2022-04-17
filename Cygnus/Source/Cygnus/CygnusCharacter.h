@@ -32,7 +32,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UInventory* Inventory;
 
-	discord::Core* DiscordCore{};
+	discord::Core* DiscordCore {};
+	discord::Activity DiscordActivity {};
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseTurnRate;

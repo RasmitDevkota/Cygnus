@@ -4,6 +4,8 @@
 #include "Engine/GameInstance.h"
 #include "Firebase.h"
 #include "Inventory.h"
+#include "WebSocket.h"
+
 #include "CygnusGameInstance.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryInstantiatedDelegate, bool, result);
@@ -19,9 +21,14 @@ public:
 	UCygnusGameInstance();
 
 	int InstanceIdentifier = 0;
+
+	bool DiscordActivitySet = false;
 	
 	UPROPERTY(BlueprintReadWrite)
     UFirebase* FirebaseObject;
+
+	UPROPERTY(BlueprintReadWrite)
+	UWebSocket* WebSocket;
 
     UPROPERTY(BlueprintReadWrite)
 	UInventory* Inventory;

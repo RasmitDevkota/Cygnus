@@ -4,7 +4,7 @@
 
 UItemObject::UItemObject()
 {
-	
+
 }
 
 UItemObject::UItemObject(FJsonObject Fields)
@@ -39,13 +39,13 @@ UItemObject::UItemObject(FJsonObject Fields)
 	FirebaseObject = GetWorld()->GetGameInstance<UCygnusGameInstance>()->FirebaseObject;
 }
 
-UItemObject::~UItemObject()
-{
-	if (NeedsPush)
-	{
-		FirebaseObject->FirebaseUpdate("users/" + FirebaseObject->userId + "/Inventory/" + Name.ToString(), "");
-	}
-}
+// UItemObject::~UItemObject()
+// {
+// 	if (NeedsPush)
+// 	{
+// 		FirebaseObject->FirebaseUpdate("users/" + FirebaseObject->userId + "/Inventory/" + Name.ToString(), "");
+// 	}
+// }
 
 void UItemObject::Set(FJsonObject Fields)
 {
@@ -57,7 +57,7 @@ void UItemObject::Set(FJsonObject Fields)
 	Description = Fields.GetObjectField("description")->GetStringField("stringValue");
 	Class = FName(Fields.GetObjectField("class")->GetStringField("stringValue"));
 	Type = FName(Fields.GetObjectField("type")->GetStringField("stringValue"));
-	
+
 	CanStack = Fields.GetObjectField("canStack")->GetStringField("booleanValue").ToBool();
 
 	Position = FCString::Atoi(*Fields.GetObjectField("position")->GetStringField("integerValue"));

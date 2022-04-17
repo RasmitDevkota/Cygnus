@@ -41,9 +41,9 @@ public:
 
 	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> FirebaseHTTPRequest(FString httpUrl, FString verb, FString data = "");
 
-	bool VerifyUsername(FString username);
-	bool VerifyEmail(FString email);
-	bool VerifyPassword(FString password);
+	static bool VerifyUsername(FString username);
+	static bool VerifyEmail(FString email);
+	static bool VerifyPassword(FString password);
 	
 	UFUNCTION(BlueprintCallable)
 	void FirebaseEmailPasswordSignUp(FString username, FString email, FString password, APlayerController* PlayerController);

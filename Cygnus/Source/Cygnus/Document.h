@@ -17,6 +17,7 @@ struct FDocument
 	FDocument()
 	{
 		Name = "";
+		
 		Fields = FJsonObject();
 		
 		Data = FJsonObject();

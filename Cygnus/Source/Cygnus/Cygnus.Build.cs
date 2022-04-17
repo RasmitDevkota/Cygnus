@@ -6,7 +6,21 @@ public class Cygnus : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "Http", "Json", "JsonUtilities", "UMG", "Slate", "SlateCore" });
+		PublicDependencyModuleNames.AddRange(new []
+		{
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"HeadMountedDisplay",
+			"Http",
+			"WebSockets",
+			"Json",
+			"JsonUtilities",
+			"UMG",
+			"Slate",
+			"SlateCore"
+		});
 		
 		MinFilesUsingPrecompiledHeaderOverride = 1;
 		bUseUnity = true;

@@ -43,7 +43,7 @@ public:
 
 	UItemObject(FJsonObject Fields);
 
-	~UItemObject();
+	// ~UItemObject();
 
 	void Set(FJsonObject Fields);
 
