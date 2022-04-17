@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Cygnus",
+			"Path": "D:\\Cygnus\\Cygnus 5.0\\Source\\Cygnus.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "CygnusEditor",
+			"Path": "D:\\Cygnus\\Cygnus 5.0\\Source\\CygnusEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
