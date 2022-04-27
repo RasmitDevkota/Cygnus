@@ -1,1 +1,3 @@
 # Cygnus
+
+Space-themed MMORPG
