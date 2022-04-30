@@ -22,7 +22,8 @@ UItemObject::UItemObject(FJsonObject Fields)
 
 	Position = FCString::Atoi(*Fields.GetObjectField("position")->GetStringField("integerValue"));
 
-	// TODO("Use enum (or similar solution) to map stats to TArray<int Order, FName DisplayName(, function FormatValue)>")
+	// New Idea: ...why? Ignore for now.
+	// Old Idea: TODO("Use enum (or similar solution) to map stats to TArray<int Order, FName DisplayName(, function FormatValue)>")
 
 	if (Fields.GetObjectField("stats")->GetObjectField("mapValue")->HasField("fields"))
 	{

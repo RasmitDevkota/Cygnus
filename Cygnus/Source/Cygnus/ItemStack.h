@@ -53,7 +53,11 @@ struct FItemStack
 
 	ECygnusError Pop()
 	{
-		// TODO("Fix this so it actually removes the correct item and instead of assuming all items are equal (hint: use pointers/references or item IDs)")
+		// New idea: Smart but what's the decision?
+		// Think Minecraft: Unique items in a stack aren't equal so you can't just pick a random one to use at any time
+		// The Catch: items can't be stacked because they differ in some way (like how broken a sword is)
+		// Old idea:
+		// TODO("Fix this so it actually removes the correct item instead of assuming all items are equal (hint: use pointers/references or item IDs)")
 		// --> Unnecessary if objects that can be unique are all !canStack
 
 		// TODO("Delete ItemStack instance or save for reuse? If both, how can we check?")

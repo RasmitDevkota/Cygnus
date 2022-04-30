@@ -13,7 +13,7 @@ public class Cygnus : ModuleRules
 			"Engine",
 			"InputCore",
 			"HeadMountedDisplay",
-			"Http",
+			"HTTP", // Is this Http? or HTTP?
 			"WebSockets",
 			"Json",
 			"JsonUtilities",

@@ -5,6 +5,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/Engine.h"
 
 ACygnusCharacter::ACygnusCharacter()
 {
@@ -30,6 +32,12 @@ ACygnusCharacter::ACygnusCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	MaxHealth = 100.0f;
+	CurrentHealth = MaxHealth;
+
+	// SetReplicates(true);
+	// SetReplicateMovement(true);
 	
 	UE_LOG(LogTemp, Warning, TEXT("Construct"));
 }
@@ -123,6 +131,51 @@ void ACygnusCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerIn
 	}
 }
 
+float ACygnusCharacter::TakeDamage(float DamageTaken, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float NewHealth = CurrentHealth - DamageTaken;
+
+	SetCurrentHealth(NewHealth);
+
+	return NewHealth;
+}
+
+void ACygnusCharacter::SetCurrentHealth(float HealthValue)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		CurrentHealth = FMath::Clamp(HealthValue, 0.f, MaxHealth);
+
+		OnHealthUpdate();
+	}
+}
+
+void ACygnusCharacter::OnHealthUpdate()
+{
+	if (IsLocallyControlled())
+	{
+		FString healthMessage = FString::Printf(TEXT("You now have %f health remaining."), CurrentHealth);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
+
+		if (CurrentHealth <= 0)
+		{
+			FString deathMessage = FString::Printf(TEXT("You have been killed."));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, deathMessage);
+		}
+	}
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		FString healthMessage = FString::Printf(TEXT("%s now has %f health remaining."), *GetFName().ToString(), CurrentHealth);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Blue, healthMessage);
+	}
+
+	// Functions that occur on all machines. 
+	/*
+		Any special functionality that should occur as a result of damage or death should be placed here.
+	*/
+}
+
 void ACygnusCharacter::TurnAtRate(float Rate)
 {
 	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
@@ -160,4 +213,16 @@ void ACygnusCharacter::MoveRight(float Value)
 void ACygnusCharacter::ToggleInventoryCall()
 {
 	CygnusGameInstance->ToggleInventory();
+}
+
+void ACygnusCharacter::GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACygnusCharacter, CurrentHealth);
+}
+
+void ACygnusCharacter::OnRep_CurrentHealth()
+{
+	OnHealthUpdate();
 }

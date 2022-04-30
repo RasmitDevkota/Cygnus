@@ -35,6 +35,8 @@ class FAstroFisiks
 	static float GravitationalForce_MassB(float Force, float MassA, float Distance);
 	static float GravitationalForce_Distance(float Force, float MassA, float MassB);
 
+	static float GravitationalAcceleration_Acceleration(float Mass, float Radius);
+
 	static float HubblesLaw_Velocity(float Distance);
 	static float HubblesLaw_Distance(float Velocity);
 };

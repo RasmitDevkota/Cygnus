@@ -1,0 +1,8 @@
+{
+    "C_Cpp.default.systemIncludePath": [
+        "D:\\Cygnus\\Cygnus\\Source\\Cygnus"
+    ],
+    "C_Cpp.default.includePath": [
+        "${default},D:\\Cygnus\\Cygnus\\Source\\Cygnus"
+    ]
+}

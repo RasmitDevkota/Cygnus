@@ -37,7 +37,11 @@ bool UFirebase::VerifyPassword(FString password) {
 // Authentication Functions
 
 void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FString password, APlayerController* PlayerController) {
-	if (VerifyUsername(username) && VerifyEmail(email) && VerifyPassword(password)) {
+	bool verifyU = VerifyUsername(username);
+	bool verifyE = VerifyEmail(email);
+	bool verifyP = VerifyPassword(password);
+
+	if (verifyU && verifyE && verifyP) {
 		TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordSignUp + apiKey, "POST", "{\"email\":\"" + email + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}");
 
 		Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
@@ -72,18 +76,24 @@ void UFirebase::FirebaseEmailPasswordSignUp(FString username, FString email, FSt
 		
 		FirebaseCreate(userId, userDocPath, userDocData);
 	} else {
-		FString verifyU = VerifyUsername(username) ? "Success" : "Failure";
-		FString verifyE = VerifyEmail(email) ? "Success" : "Failure";
-		FString verifyP = VerifyPassword(password) ? "Success" : "Failure";
+		FString verifyUStr = verifyU ? "Success" : "Failure";
+		FString verifyEStr = verifyE ? "Success" : "Failure";
+		FString verifyPStr = verifyP ? "Success" : "Failure";
 
-		UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyU));
-		UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyE));
-		UE_LOG(LogTemp, Warning, TEXT("VerifyPassword returned: %s"), *FString(verifyP));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyUStr));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyEStr));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyPassword returned: %s"), *FString(verifyPStr));
 	}
 }
 
 void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, APlayerController* PlayerController) {
-    if (VerifyEmail(identity) && VerifyPassword(password)) {
+	// Is this optimal really? Maybe consider changing order?
+
+	bool verifyU = VerifyUsername(identity);
+	bool verifyE = VerifyEmail(identity);
+	bool verifyP = VerifyPassword(password);
+
+	if (verifyE && verifyP) {
     	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(emailPasswordAuthUrl + apiKey, "POST", "{\"email\":\"" + identity + "\",\"password\":\"" + password + "\",\"returnSecureToken\":true}");
 
     	Request->OnProcessRequestComplete().BindLambda([&](FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
@@ -123,7 +133,7 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
         });
         
     	Request->ProcessRequest();
-    } else if (VerifyUsername(identity) && VerifyPassword(password)) {
+    } else if (verifyU && verifyP) {
     	FString getUrl = "https://firestore.googleapis.com/v1beta1/projects/my-scrap-project/databases/(default)/documents/emails/" + identity + "?key=";
     	TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FirebaseHTTPRequest(getUrl + apiKey, "GET");
 
@@ -163,13 +173,13 @@ void UFirebase::FirebaseEmailPasswordAuth(FString identity, FString password, AP
 	
     	Request->ProcessRequest();
     } else {
-    	FString verifyU = VerifyUsername(identity) ? "Success" : "Failure";
-    	FString verifyE = VerifyEmail(identity) ? "Success" : "Failure";
-    	FString verifyP = VerifyPassword(password) ? "Success" : "Failure";
+		FString verifyEStr = verifyE ? "Success" : "Failure";
+		FString verifyUStr = verifyU ? "Success" : "Failure";
+		FString verifyPStr = verifyP ? "Success" : "Failure";
 
-    	UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyU));
-    	UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyE));
-    	UE_LOG(LogTemp, Warning, TEXT("VerifyPassword returned: %s"), *FString(verifyP));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyEmail returned: %s"), *FString(verifyEStr));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyUsername returned: %s"), *FString(verifyUStr));
+		UE_LOG(LogTemp, Warning, TEXT("VerifyPassword returned: %s"), *FString(verifyPStr));
 
         OnAuthRequestComplete.Broadcast(false);
     }

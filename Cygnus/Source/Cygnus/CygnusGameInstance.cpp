@@ -3,11 +3,11 @@
 UCygnusGameInstance::UCygnusGameInstance()
 {
 	InstanceIdentifier = rand();
-	
+
 	FirebaseObject = NewObject<UFirebase>();
 
 	WebSocket = NewObject<UWebSocket>();
-	
+
 	Inventory = NewObject<UInventory>();
 
 	UE_LOG(LogTemp, Warning, TEXT("Game Instance %d constructed"), InstanceIdentifier);

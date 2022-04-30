@@ -84,7 +84,7 @@ float FAstroFisiks::CosmologicalRedshift_EmittedWavelength(float Redshift, float
 
 float FAstroFisiks::RelativisticRedshift_Redshift(float Velocity)
 {
-	return 0.0f;
+	return pow((c + Velocity) / (c - Velocity), 0.5) - 1;
 }
 
 float FAstroFisiks::RelativisticRedshift_Velocity(float Redshift)
@@ -94,42 +94,47 @@ float FAstroFisiks::RelativisticRedshift_Velocity(float Redshift)
 
 float FAstroFisiks::DopplerFormula_Velocity(float Redshift)
 {
-	return 0.0f;
+	return c * Redshift;
 }
 
 float FAstroFisiks::DopplerFormula_Redshift(float Velocity)
 {
-	return 0.0f;
+	return Velocity / c;
 }
 
 float FAstroFisiks::MassEnergyEquivalence_Energy(float Mass)
 {
-	return 0.0f;
+	return Mass * pow(c, 2);
 }
 
 float FAstroFisiks::MassEnergyEquivalence_Mass(float Energy)
 {
-	return 0.0f;
+	return Energy / pow(c, 2);
 }
 
 float FAstroFisiks::GravitationalForce_Force(float MassA, float MassB, float Distance)
 {
-	return 0.0f;
+	return G * MassA * MassB / pow(Distance, 2);
 }
 
 float FAstroFisiks::GravitationalForce_MassA(float Force, float MassB, float Distance)
 {
-	return 0.0f;
+	return Force / (G * MassB / pow(Distance, 2));
 }
 
 float FAstroFisiks::GravitationalForce_MassB(float Force, float MassA, float Distance)
 {
-	return 0.0f;
+	return Force / (G * MassA / pow(Distance, 2));
 }
 
 float FAstroFisiks::GravitationalForce_Distance(float Force, float MassA, float MassB)
 {
-	return 0.0f;
+	return pow(G * MassA * MassB / Force, 0.5);
+}
+
+float FAstroFisiks::GravitationalAcceleration_Acceleration(float Mass, float Radius)
+{
+	return G * Mass / pow(Radius, 2);
 }
 
 float FAstroFisiks::HubblesLaw_Velocity(float Distance)
